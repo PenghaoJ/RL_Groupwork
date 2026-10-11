@@ -1,0 +1,9 @@
+[
+  {
+    "id": "custom-example",
+    "name": "JSON example (untrained)",
+    "description": "JSON adapter example with random legal moves.",
+    "protocol": "json",
+    "command": ["{python}", "{root}/examples/model_agent.py"]
+  }
+]

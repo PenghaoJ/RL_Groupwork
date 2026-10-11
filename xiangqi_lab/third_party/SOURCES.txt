@@ -1,0 +1,20 @@
+Pikafish 2026-09-06, unmodified universal binaries and matching NNUE:
+https://github.com/official-pikafish/Pikafish/releases/tag/Pikafish-2026-09-06
+https://github.com/official-pikafish/Pikafish/releases/download/Pikafish-2026-09-06/Pikafish.2026-09-06.7z
+Corresponding source archive shipped in this directory:
+https://github.com/official-pikafish/Pikafish/archive/refs/tags/Pikafish-2026-09-06.tar.gz
+Engine license: engine/Copying.txt (GPLv3)
+Network license: engine/NNUE-License.md
+Authors: engine/AUTHORS
+
+Windows CPython 3.13.16, official full ZIP:
+https://www.python.org/ftp/python/3.13.16/python-3.13.16-amd64.zip
+SHA256 bbf675bb5e763c1efbb09a3a461b259d81598a63c30c4b0d7ea11b9f063df159
+The runtime license files are preserved in runtime/python.
+
+macOS CPython 3.13.16 (Intel and Apple Silicon), Astral build 20261003:
+https://github.com/astral-sh/python-build-standalone/releases/tag/20261003
+cpython-3.13.16+20261003-aarch64-apple-darwin-install_only_stripped.tar.gz
+cpython-3.13.16+20261003-x86_64-apple-darwin-install_only_stripped.tar.gz
+Archive executable modes and symlink targets are preserved in the release ZIP.
+Runtime licenses are preserved inside runtime/macos-*/python.

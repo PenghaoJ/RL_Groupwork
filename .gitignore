@@ -1,0 +1,7 @@
+.runtime/
+.setup/
+__pycache__/
+*.pyc
+.playwright-cli/
+output/
+dist/

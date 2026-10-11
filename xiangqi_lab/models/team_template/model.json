@@ -1,0 +1,12 @@
+{
+  "schema": "xiangqi-lab.model.v1",
+  "id": "custom-team-template",
+  "name": "Team template (untrained)",
+  "description": "Drop-in Python policy; replace policy.py with your inference code.",
+  "protocol": "python",
+  "entrypoint": "policy.py",
+  "python": "{python}",
+  "checkpoint": null,
+  "device": "cpu",
+  "timeout_seconds": 30
+}
