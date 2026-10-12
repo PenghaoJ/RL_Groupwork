@@ -1,0 +1,42 @@
+name: Platform checks
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Python 3.13 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15-intel, macos-15]
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Make the Mac engine executable
+        if: runner.os == 'macOS'
+        run: chmod +x xiangqi_lab/engine/Pikafish-MacOS-universal
+      - name: Run rules, HTTP and model integration tests
+        run: python -X utf8 -m unittest discover -s xiangqi_lab/tests -v
+      - name: Check the supplied policy template
+        run: python -X utf8 xiangqi_lab/validate_model.py --model custom-team-template

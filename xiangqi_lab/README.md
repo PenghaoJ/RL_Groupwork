@@ -23,12 +23,12 @@ All application-owned Chinese UI strings and traditional board symbols are in **
 
 ## Play and create positions
 
-- Select a preset or enter FEN. Presets are illustrative positions, not labeled solved puzzles.
-- Build a position by choosing a piece and placing it on the board. Use the eraser to remove pieces. Apply validates both kings, reachable squares and the side to move.
-- Choose a controller for Red and Black independently. Start match runs model turns and waits for human turns. Model step performs one inference.
+- Choose a board, choose Red and Black, then click **Play**. **Player** means a person clicks pieces; **AI move** asks the selected model to make just one move.
+- Use **Edit board** to place pieces. Use the eraser to remove pieces, then **Use this board** to check and load the position. Presets are examples, not labeled solved puzzles.
+- **More options** contains the AI time, move limit and board code (FEN). **Moves** opens the move list; **Game info** shows counts and AI details.
 - Pause prevents subsequent moves; the current inference is allowed to finish. Undo removes one ply. Reset restores the episode's initial position.
-- Ply limits apply when loading or resetting. Hitting the limit truncates an episode rather than declaring a draw.
-- Export an episode to save initial FEN, moves, controllers, before/after positions, search information and outcome. Import replays and validates every move. Imported search information is not recomputed.
+- A move on screen means one ply: one turn by either side. Move limits apply when loading or resetting. Hitting the limit stops the game rather than declaring a draw; the API records a truncated episode.
+- **Save game** downloads an episode with initial FEN, moves, controllers, before/after positions, search information and outcome. **Load game** replays and validates its moves. Imported search information is not recomputed.
 
 Each browser page has an independent in-memory session. Refreshing a page starts a new session. Export your episode before refreshing or shutting down. The service listens only on loopback and is not an internet-facing or multi-user deployment.
 
@@ -39,7 +39,7 @@ Start with **[MODEL_API.md](MODEL_API.md)** and the working **`models/team_templ
 1. Copy the folder, add weights, set a unique ID/name in `model.json`.
 2. Load your network in `Policy.__init__` and implement `select_move` in `policy.py`.
 3. Set the manifest's `python` to an environment with your model's dependencies, if required.
-4. Open Connect a model, Reload models, and Check integration.
+4. Open **Models**, click **Refresh list**, then **Test** next to your model.
 5. Assign the model to Red or Black and start a match.
 
 Python policies load once into a persistent process. JSON command-line and UCI adapters remain available. Integration checks use three sample positions covering both sides and do not change your game. They establish that those calls return legal moves, not that arbitrary weights will work or that a policy is strong. The app cannot reconstruct a network architecture from a weights file alone.
@@ -87,7 +87,9 @@ Standard moves, horse legs, elephant eyes, cannon screens, palace/river restrict
 | `engine/`, `third_party/` | Binaries, weights, license notices and corresponding engine source |
 | `tests/` | Rules, adapter, isolation, timeout and integration tests |
 
-From the app folder, run `python -m unittest discover -s tests -v` or `python validate_model.py --all`. In a Windows release use `runtime\python\python.exe` in place of `python`. In the development workspace use `../.runtime/python/python.exe`. The workspace's `tools/build_release.py` builds both platform ZIPs and SHA256 checksums.
+From the app folder, run `python -m unittest discover -s tests -v` or `python validate_model.py --all`. Use the Python environment that runs the app. In a Windows release use `runtime\python\python.exe` in place of `python`.
+
+A GitHub source checkout does not include Python runtimes. Install Python 3.13 and follow the repository root README to create a development environment and run `app.py` directly. On macOS, make `engine/Pikafish-MacOS-universal` executable with `chmod +x` first. The source workspace's `tools/build_release.py` builds both platform ZIPs and SHA256 checksums only after the required runtimes have been prepared locally.
 
 ## Third-party components
 

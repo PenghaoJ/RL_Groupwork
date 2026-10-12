@@ -1,0 +1,24 @@
+* text=auto
+.gitattributes text eol=lf
+.gitignore text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.command text eol=lf
+*.bat text eol=crlf
+
+*.exe binary
+*.nnue binary
+*.zip binary
+*.gz binary
+*.7z binary
+*.docx binary
+*.pdf binary
+*.png binary
+xiangqi_lab/engine/Pikafish-MacOS-universal binary

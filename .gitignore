@@ -1,7 +1,39 @@
 .runtime/
 .setup/
 __pycache__/
-*.pyc
+*.py[cod]
 .playwright-cli/
 output/
 dist/
+
+# Per-machine Python environments and configuration
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local experiments and model weights; share code and reproducibility metadata.
+# Bundled Pikafish .nnue files and third-party source archives remain tracked.
+checkpoints/
+runs/
+wandb/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.log
+xiangqi_lab/models/local_*/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+~$*

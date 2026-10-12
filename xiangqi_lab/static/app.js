@@ -1,5 +1,20 @@
 'use strict';
-const EN={};
+// Display names are independent of model IDs and saved game data.
+const EN={
+  'Starting position':'Full board',
+  'Cannon coordination':'Cannon & pawn',
+  'Starter · 6 pieces':'6 pieces',
+  'Explore · 8 pieces':'8 pieces',
+  'Reference · 32 pieces':'32 pieces',
+  'Human':'Player',
+  'Random legal policy':'Random',
+  'JSON example (untrained)':'Example (not trained)',
+  'Team template (untrained)':'Team demo (not trained)',
+  'Bundled NNUE reference engine.':'Built-in Xiangqi AI.',
+  'Untrained baseline.':'Picks a random valid move.',
+  'JSON adapter example with random legal moves.':'Example code that picks a random move.',
+  'Drop-in Python policy; replace policy.py with your inference code.':'A working example for your team to build on.'
+};
 for(const p of 'KAEHRCPkaehrcp'){
   EN['symbol.'+p]=p.toUpperCase();
   EN['piece.'+p]={K:'King',A:'Advisor',E:'Elephant',H:'Horse',R:'Rook',C:'Cannon',P:'Pawn'}[p.toUpperCase()];
@@ -35,12 +50,12 @@ async function loadLanguage(value){
   }
   try{localStorage.setItem('xiangqi-language',lang);}catch{}
   document.documentElement.lang=lang;
-  document.title=t('Xiangqi Lab | Endgame Workspace');
+  document.title=t('Xiangqi Lab');
   document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n||el.textContent;el.dataset.i18n=key;el.textContent=t(key);});
   document.querySelectorAll('[data-piece]').forEach(el=>{el.textContent=pieceSymbol(el.dataset.piece);});
   for(const [data,attr]of [['i18nTitle','title'],['i18nAria','aria-label']])document.querySelectorAll('[data-'+data.replace('i18n','i18n-').toLowerCase()+']').forEach(el=>el.setAttribute(attr,t(el.dataset[data])));
   $('language').value=lang;
-  $('connection').textContent=t('Local · Connected');
+  $('connection').textContent=t('Local');
   populateModels();populatePresets();renderModelList();
   if(state){const fen=$('fen-input').value;render();$('fen-input').value=fen;if(editing)renderPalette();}
 }
@@ -49,16 +64,16 @@ function populateModels(){
 }
 function populatePresets(){
   $('presets').replaceChildren();
-  for(const p of meta.presets){const b=document.createElement('button');b.className='preset';b.dataset.id=p.id;for(const [tag,text]of [['strong',p.name],['span',p.tag],['small',p.description]]){const e=document.createElement(tag);e.textContent=t(text);b.appendChild(e);}b.onclick=async()=>{if(editing)endEditor();await resetTo(p.fen,p.name,p.id);};$('presets').appendChild(b);}
+  for(const p of meta.presets){const b=document.createElement('button');b.className='preset';b.dataset.id=p.id;for(const [tag,text]of [['strong',p.name],['span',p.tag]]){const e=document.createElement(tag);e.textContent=t(text);b.appendChild(e);}b.onclick=async()=>{if(editing)endEditor();await resetTo(p.fen,p.name,p.id);};$('presets').appendChild(b);}
 }
 function renderModelList(){
   $('model-list').replaceChildren();
   for(const model of meta.models.filter(m=>m.id!=='human')){
     const row=document.createElement('div');row.className='model-row';
     const text=document.createElement('div'),name=document.createElement('strong'),description=document.createElement('small');name.textContent=modelName(model.id);description.textContent=t(model.description);text.append(name,description);
-    const button=document.createElement('button');button.className='button secondary check-model';button.textContent=t('Check integration');button.setAttribute('aria-label',t('Check {model}',{model:modelName(model.id)}));button.disabled=busy;button.onclick=()=>validateModel(model.id);row.append(text,button);$('model-list').appendChild(row);
+    const button=document.createElement('button');button.className='button secondary check-model';button.textContent=t('Test');button.setAttribute('aria-label',t('Test {model}',{model:modelName(model.id)}));button.disabled=busy;button.onclick=()=>validateModel(model.id);row.append(text,button);$('model-list').appendChild(row);
   }
-  $('model-check-status').textContent=!modelCheck?'':modelCheck.message?t(modelCheck.message):modelCheck.error?localizeError(modelCheck.error):t(modelCheck.passed?'Passed: {model}, 3 sample positions. Your match was not changed.':'Checking {model}…',{model:modelName(modelCheck.model)});
+  $('model-check-status').textContent=!modelCheck?'':modelCheck.message?t(modelCheck.message):modelCheck.error?localizeError(modelCheck.error):t(modelCheck.passed?'Passed: {model}, 3 test positions. Your game is unchanged.':'Testing {model}…',{model:modelName(modelCheck.model)});
 }
 async function validateModel(model){
   if(busy)return;stop();setBusy(true);modelCheck={model};renderModelList();
@@ -94,25 +109,24 @@ function renderControls(){
   $('export').disabled=busy||editing;
   $('step').disabled=busy||editing||done||control(state.side)==='human';
   $('play').disabled=editing||done||(busy&&!running);
-  $('play').textContent=running?t("Ⅱ Pause match"):busy?t("Finishing this move…"):t("▶ Start match");
+  $('play').textContent=running?t("Pause"):busy?t("Please wait…"):t("Play");
   $('play').style.background=running?'#8b6a48':'';
-  $('edit-toggle').textContent=editing?t("Editing position"):t("＋ Build a position");
+  $('edit-toggle').textContent=editing?t("Editing board"):t("Edit board");
   $('edit-toggle').disabled=busy||editing;
   $('red-label').textContent=modelName(control('red'));
   $('black-label').textContent=modelName(control('black'));
-  $('red-state').textContent=state.side==='red'?(busy?t("Thinking…"):done?t("Episode ended"):t("To move")):t("Waiting");
-  $('black-state').textContent=state.side==='black'?(busy?t("Thinking…"):done?t("Episode ended"):t("To move")):t("Waiting");
-  if(editing)$('run-status').textContent=t("Editing · Apply to start an experiment");
+  for(const side of ['red','black'])$(side+'-state').textContent=done?t('Game over'):state.side===side?(busy?t('Thinking…'):control(side)==='human'?t('Your turn'):t('AI turn')):t('Waiting');
+  if(editing)$('run-status').textContent=t("Click Use this board when ready.");
   else if(done)$('run-status').textContent=outcomeText();
-  else if(busy)$('run-status').textContent=running?t("Thinking · Pause to stop subsequent moves"):t("Finishing the current move");
-  else if(running)$('run-status').textContent=control(state.side)==='human'?t("Waiting for your move"):t("Automatic match running");
+  else if(busy)$('run-status').textContent=running?t("Thinking… Pause stops after this move."):t("Finishing this move…");
+  else if(running)$('run-status').textContent=control(state.side)==='human'?t("Your turn. Click a piece."):t("AI is playing.");
   else $('run-status').textContent=t('Red: {red} · Black: {black}',{red:modelName(control('red')),black:modelName(control('black'))});
 }
 function outcomeText(){
   if(!state.outcome)return '';
-  const reasons={checkmate:t("Checkmate"),stalemate:t("Stalemate"),repetition:t("Threefold repetition"),no_capture:t("120 plies without capture"),ply_limit:t("Experiment ply limit")};
+  const reasons={checkmate:t("Checkmate"),stalemate:t("Stalemate"),repetition:t("Same position 3 times"),no_capture:t("120 moves without a capture"),ply_limit:t("Move limit reached")};
   const o=state.outcome;
-  return (o.truncated?t("Episode truncated"):o.winner?(o.winner==='red'?t("Red wins"):t("Black wins")):t("Draw"))+' · '+reasons[o.reason];
+  return (o.truncated?t("Game stopped"):o.winner?(o.winner==='red'?t("Red wins"):t("Black wins")):t("Draw"))+' · '+reasons[o.reason];
 }
 function svg(tag,attrs={},parent=$('board')){const e=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e;}
 function pos(r,c){return flipped?[46+(8-c)*56,48+(9-r)*56]:[46+c*56,48+r*56];}
@@ -156,7 +170,7 @@ function drawBoard(){
 }
 function render(){
   if(!state)return;
-  $('fen-input').value=state.fen;$('position-title').textContent=editing?t("Custom position"):t(title);
+  $('fen-input').value=state.fen;$('position-title').textContent=editing?t("Your board"):t(title);
   $('turn-badge').textContent=editing?t("Editing"):state.outcome?outcomeText():(state.side==='red'?t("Red to move"):t("Black to move"))+(state.in_check?t(" · In check"):'');
   $('turn-badge').className='turn-badge'+(state.side==='black'?' black-turn':'');
   $('piece-count').textContent=state.piece_count;
@@ -165,7 +179,7 @@ function render(){
   const latest=state.history.at(-1)?.analysis||{};
   $('thinking-time').textContent=latest.elapsed_ms!==undefined?(latest.elapsed_ms/1000).toFixed(2)+'s':'—';
   const evaluation=state.history.slice().reverse().find(m=>m.analysis?.depth)?.analysis;
-  $('evaluation').textContent=evaluation?t('Depth {depth} · {nodes} nodes',{depth:evaluation.depth,nodes:Number(evaluation.nodes||0).toLocaleString()}):t("Search details appear after an engine move");
+  $('evaluation').textContent=evaluation?t('Depth {depth} · {nodes} nodes',{depth:evaluation.depth,nodes:Number(evaluation.nodes||0).toLocaleString()}):t("Details appear after an AI move.");
   $('record-count').textContent=state.history.length;
   if(state.history.length){
     $('moves').replaceChildren();
@@ -177,8 +191,8 @@ function render(){
     }
     rows.forEach((row,i)=>{const div=document.createElement('div');div.className='move-row';const n=document.createElement('span');n.textContent=String(i+1).padStart(2,'0');div.appendChild(n);for(const side of ['red','black']){const e=document.createElement('span'),m=row[side];e.className='move-cell '+(side==='red'?'red-move ':'')+(m?.index===state.history.length-1?'latest':'');e.textContent=m?m.move:'·';if(m)e.title=`${pieceName(m.piece)} ${m.move} · ${modelName(m.actor)}`;div.appendChild(e);}$('moves').appendChild(div);});
     $('moves').scrollTop=$('moves').scrollHeight;
-  }else {const empty=document.createElement('div');empty.className='empty-log';for(const [tag,text] of [['span','♧'],['strong',t('Your first move awaits')],['p',t('Every move leaves a reproducible trace')]]){const e=document.createElement(tag);e.textContent=text;empty.appendChild(e);}$('moves').replaceChildren(empty);}
-  $('board-hint').textContent=editing?t("Choose a piece and click a square. Select × to erase."):state.outcome?outcomeText():selected?t('Selected {square} · Choose a highlighted move',{square:selected}):t("Select one of your pieces to see its legal moves.");
+  }else {const empty=document.createElement('div');empty.className='empty-log';const text=document.createElement('strong');text.textContent=t('No moves yet');empty.appendChild(text);$('moves').replaceChildren(empty);}
+  $('board-hint').textContent=editing?t("Pick a piece, then click the board. Use × to remove a piece."):state.outcome?outcomeText():selected?t('{square} selected. Click a marked spot.',{square:selected}):control(state.side)==='human'?t("Click a piece to see where it can move."):t("This is the AI's turn. Click Play or AI move.");
   if(state.outcome)running=false;
   document.querySelectorAll('.preset').forEach(el=>el.classList.toggle('selected',el.dataset.id===presetId));
   renderControls();drawBoard();
@@ -194,7 +208,7 @@ async function onSquare(r,c){
   if(busy)return;
   if(editing){draft[r][c]=palette;drawBoard();return;}
   if(state.outcome)return;
-  if(control(state.side)!=='human'){notify(t("A model controls this side. Use Model step or Start match."));return;}
+  if(control(state.side)!=='human'){notify(t("This is the AI's turn. Click Play or AI move."));return;}
   const s=sq(r,c),piece=state.board[r][c];
   if(selected&&state.legal_moves.includes(selected+s)){
     if(await action('move',{move:selected+s}))schedule();return;
@@ -235,17 +249,18 @@ $('step').onclick=()=>{stop();engineStep();};
 $('undo').onclick=()=>{stop();action('undo');};
 $('reset').onclick=()=>resetTo(state.initial_fen,title,presetId);
 $('flip').onclick=()=>{flipped=!flipped;drawBoard();};
-$('load-fen').onclick=()=>resetTo($('fen-input').value,'Custom endgame',null);
-$('copy-fen').onclick=async()=>{try{await navigator.clipboard.writeText(state.fen);notify(t("Position FEN copied."));}catch{$('fen-input').select();notify(t("Press Ctrl+C / Cmd+C to copy the selected FEN."));}};
+$('load-fen').onclick=()=>resetTo($('fen-input').value,'Your board',null);
+$('copy-fen').onclick=async()=>{try{await navigator.clipboard.writeText(state.fen);notify(t("Board code copied."));}catch{$('fen-input').select();notify(t("Press Ctrl+C / Cmd+C to copy the board code."));}};
 $('edit-toggle').onclick=startEditor;$('edit-cancel').onclick=endEditor;
 $('clear-board').onclick=()=>{draft=Array.from({length:10},()=>Array(9).fill(''));drawBoard();};
-$('edit-apply').onclick=async()=>{const fen=draftFen();if(await resetTo(fen,'Custom endgame',null))endEditor();};
-$('export').onclick=async()=>{try{const episode=await api('export');episode.controllers={red:control('red'),black:control('black')};download('xiangqi-episode-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',JSON.stringify(episode,null,2),'application/json');notify(t("Episode exported for replay or dataset preparation."));}catch(e){notify(e.message,true);}};
+$('edit-apply').onclick=async()=>{const fen=draftFen();if(await resetTo(fen,'Your board',null))endEditor();};
+$('export').onclick=async()=>{try{const episode=await api('export');episode.controllers={red:control('red'),black:control('black')};download('xiangqi-episode-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',JSON.stringify(episode,null,2),'application/json');notify(t("Game saved."));}catch(e){notify(e.message,true);}};
 $('import').onclick=()=>$('import-file').click();
-$('import-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;stop();try{if(file.size>1000000)throw Error(t("The file must be smaller than 1 MB."));const episode=JSON.parse(await file.text());if(await action('import',{episode})){title='Imported episode';presetId=null;$('ply-limit').value=state.max_plies;render();notify(t("Episode loaded. Every move passed legality checks."));}}catch(err){notify(err.message,true);}e.target.value='';};
+$('import-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;stop();try{if(file.size>1000000)throw Error(t("The file must be smaller than 1 MB."));const episode=JSON.parse(await file.text());if(await action('import',{episode})){title='Loaded game';presetId=null;$('ply-limit').value=state.max_plies;render();notify(t("Game loaded."));}}catch(err){notify(err.message,true);}e.target.value='';};
 for(const side of ['red','black'])$(side+'-model').onchange=()=>{stop();selected=null;render();};
-for(const id of ['guide-nav','guide-open'])$(id).onclick=()=>modal('guide-dialog');
-$('rules-open').onclick=()=>modal('rules-dialog');$('workspace-nav').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+$('guide-open').onclick=()=>modal('guide-dialog');
+$('rules-open').onclick=()=>modal('rules-dialog');
+$('history-panel').ontoggle=()=>{if($('history-panel').open)$('moves').scrollTop=$('moves').scrollHeight;};
 document.querySelectorAll('[data-close]').forEach(el=>el.onclick=()=>$(el.dataset.close).close());
 window.addEventListener('beforeunload',()=>{clearTimeout(timer);});
 async function init(){
@@ -262,10 +277,10 @@ async function init(){
     let preferred='en';try{preferred=localStorage.getItem('xiangqi-language')||'en';}catch{}
     await loadLanguage(preferred);
     const result=await api('session');session=result.session;state=result.state;render();
-    $('connection').textContent=t("Local · Connected");
-    if(!meta.engine_available){$('engine-health').textContent=t("No engine found for this platform");notify(t("Pikafish is missing. Human play and the random baseline remain available."),true);}
+    $('connection').textContent=t("Local");
+    if(!meta.engine_available){$('engine-health').textContent=t("Pikafish is not available");notify(t("Pikafish is missing. You can still use Player or Random."),true);}
   }catch(e){$('connection').textContent=t("Connection failed");notify(e.message+t(" Keep the local server window running."),true);document.querySelectorAll('button').forEach(b=>b.disabled=true);}
 }
 $('language').onchange=()=>loadLanguage($('language').value);
-$('reload-models').onclick=async()=>{if(busy)return;stop();setBusy(true);try{const result=await api('models/reload');meta.models=result.models;modelCheck={message:'Models reloaded. Workers restart on the next request.'};populateModels();renderModelList();render();}catch(e){notify(e.message,true);}finally{setBusy(false);}};
+$('reload-models').onclick=async()=>{if(busy)return;stop();setBusy(true);try{const result=await api('models/reload');meta.models=result.models;modelCheck={message:'Model list updated.'};populateModels();renderModelList();render();}catch(e){notify(e.message,true);}finally{setBusy(false);}};
 init();

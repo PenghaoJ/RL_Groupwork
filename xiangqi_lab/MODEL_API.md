@@ -9,7 +9,7 @@ The website is an inference and evaluation host. It cannot infer a network archi
 3. Put your weights in that folder; set `checkpoint` to their relative filename.
 4. Implement `Policy` in `policy.py`. Load the correct architecture and weights in `__init__`. Return a legal move from `select_move`.
 5. If using PyTorch, ONNX Runtime or other dependencies, set `python` to your inference environment's executable. The bundled Python contains only the standard library. Install dependencies in your own environment, not the web app's runtime.
-6. Open **Connect a model → Reload models → Check integration**. After the check passes, choose the model as either controller and start a match.
+6. Open **Models → Refresh list → Test**. After the check passes, choose the model for Red or Black and click **Play**.
 
 ```json
 {
@@ -26,7 +26,7 @@ The website is an inference and evaluation host. It cannot infer a network archi
 }
 ```
 
-On macOS, use the environment's path such as `/Users/you/project/.venv/bin/python`. `{python}` selects the bundled interpreter. `device` is passed to your class; the host does not enable a GPU or silently change devices. Set `checkpoint` to `null` for policies without weights. `entrypoint` must stay inside the model folder. Inference runs from that folder, so use the supplied absolute checkpoint path when loading weights.
+On macOS, use the environment's path such as `/Users/you/project/.venv/bin/python`. `{python}` selects the interpreter running the server (the bundled interpreter when using a portable launcher, or your development environment when running from source). For a shared manifest, prefer `"python": "{python}"` and start the server with the environment containing your model dependencies; this avoids committing a teammate's personal interpreter path. `device` is passed to your class; the host does not enable a GPU or silently change devices. Set `checkpoint` to `null` for policies without weights. `entrypoint` must stay inside the model folder. Inference runs from that folder, so use the supplied absolute checkpoint path when loading weights.
 
 ```python
 class Policy:
@@ -53,7 +53,7 @@ return 4905
 return {"action_id": 4905}
 ```
 
-Return exactly one representation. Boolean IDs, out-of-range IDs, malformed responses and illegal moves are rejected. A policy process is loaded once, reused across moves and serialized per model. Do not keep hidden per-game state in the policy: the same worker may serve several browser sessions. Use the provided observation, or define a separate explicit stateful protocol in a later extension. Clicking Reload models terminates cached workers so edited code and weights are loaded on the next request.
+Return exactly one representation. Boolean IDs, out-of-range IDs, malformed responses and illegal moves are rejected. A policy process is loaded once, reused across moves and serialized per model. Do not keep hidden per-game state in the policy: the same worker may serve several browser sessions. Use the provided observation, or define a separate explicit stateful protocol in a later extension. Clicking **Refresh list** in **Models** terminates cached workers so edited code and weights are loaded on the next request.
 
 Import-time and inference `print()` calls are redirected to stderr by the Python worker. Exceptions and model timeouts stop the requested move without changing the board. A failed worker restarts on its next request. `timeout_seconds` covers startup plus inference on the first call, and inference on later calls; valid range is 0.1–120 seconds. `time_budget_ms` is advisory for Python/JSON policies, and is enforced as UCI `go movetime` for UCI engines. Windows/macOS environment paths are platform-specific: adjust them on the teammate's machine.
 
@@ -105,7 +105,7 @@ python validate_model.py --model custom-my-policy
 python validate_model.py --all
 ```
 
-For a Windows release, replace `python` with `runtime\python\python.exe`. This is also available from Connect a model in the UI. It calls the real adapter on three independent positions, including both Red and Black, and validates legal outputs without changing the current match. Passing demonstrates those sample calls, not model strength or correctness on every possible endgame. Validate your own checkpoint's full evaluation suite separately.
+For a Windows release, replace `python` with `runtime\python\python.exe`. This is also available from **Models → Test** in the UI. It calls the real adapter on three independent positions, including both Red and Black, and validates legal outputs without changing the current match. Passing demonstrates those sample calls, not model strength or correctness on every possible endgame. Validate your own checkpoint's full evaluation suite separately.
 
 ## Local HTTP interfaces
 
