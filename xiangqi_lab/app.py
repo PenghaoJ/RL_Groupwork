@@ -38,7 +38,7 @@ class Session:
         return {**self.game.snapshot(),"revision":self.revision}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version="XiangqiLab/1.1.1"
+    server_version="XiangqiLab/1.2.0"
 
     def send_json(self,status,data):
         body=json.dumps(data,ensure_ascii=False).encode("utf-8")
@@ -56,7 +56,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self.trusted(): return self.send_json(403,{"error":"Only local same-origin access is allowed."})
         path=urlparse(self.path).path
         if path == "/api/meta":
-            try: return self.send_json(200,{"presets":PRESETS,"models":model_catalog(),"engine_available":engine_path().is_file(),"version":"1.1.1","languages":["en"]+(["zh-CN"] if (ROOT/'static/locales/zh-CN.json').is_file() else []),"rules":"Research rules: threefold repetition / 120 non-capture plies; no perpetual-check/chase adjudication."})
+            try: return self.send_json(200,{"presets":PRESETS,"models":model_catalog(),"engine_available":engine_path().is_file(),"version":"1.2.0","languages":["en"]+(["zh-CN"] if (ROOT/'static/locales/zh-CN.json').is_file() else []),"rules":"Research rules: threefold repetition / 120 non-capture plies; no perpetual-check/chase adjudication."})
             except ValueError as e: return self.send_json(400,{"error":str(e)})
         files={"/":"index.html","/app.js":"app.js","/style.css":"style.css","/favicon.svg":"favicon.svg"}
         for locale in (ROOT/'static'/'locales').glob('*.json'):

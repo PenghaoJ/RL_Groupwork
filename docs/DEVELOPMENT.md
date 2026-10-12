@@ -27,6 +27,7 @@ Offline training -> training.XiangqiEnv -> the same rules.py
 | Inference and worker lifetime | `engines.py`, `policy_process.py`, `model_worker.py` inside `xiangqi_lab/` | Legal moves, worker reuse, exceptions and timeout tests |
 | One team's policy | `xiangqi_lab/models/<name>/` | Model preflight and the team's evaluation suite |
 | Packaging | `tools/build_release.py` | Full extraction and launch on each target OS |
+| Windows launch / ZIP recovery | `tools/windows_launcher.ps1` | Run `tools/build_launchers.py`, then check source, standalone BAT + ZIP, incomplete packages and paths with spaces |
 
 The app is a local inference and game host. Training should call the Python environment directly, without driving the web UI. It has no training-job scheduler, automatic ML dependency installer or GPU manager.
 
@@ -68,7 +69,13 @@ Development from source uses an installed Python; offline releases carry their o
 | Apple Silicon Python standalone archive | `.setup/mac-runtimes/*-aarch64-apple-darwin-install_only_stripped.tar.gz` |
 | Intel Mac Python standalone archive | `.setup/mac-runtimes/*-x86_64-apple-darwin-install_only_stripped.tar.gz` |
 
-Exact runtime provenance is listed in [SOURCES.txt](../xiangqi_lab/third_party/SOURCES.txt). Keep only the intended archive for each Mac architecture in that input folder. Ensure the version constants in the builder match the inputs. Then run `python tools/build_release.py` with Python 3.13. It builds **both** OS ZIPs and `dist/SHA256SUMS.txt`.
+Exact runtime provenance is listed in [SOURCES.txt](../xiangqi_lab/third_party/SOURCES.txt). Keep only the intended archive for each Mac architecture in that input folder. Ensure the version constants in the builder match the inputs. Then run `python tools/build_release.py` with Python 3.13. It builds **both** OS ZIPs, a standalone Windows BAT, `WINDOWS-START.txt` and `dist/SHA256SUMS.txt`. Use `--platform Windows` or `--platform macOS` to build only that platform. Runtime inputs are checked before writing an archive.
+
+Edit `tools/windows_launcher.ps1`, then run `python tools/build_launchers.py` to regenerate all three Windows entry points. Each BAT embeds the whole PowerShell script, so it does not depend on another script surviving ZIP-viewer temporary extraction. The builder also regenerates them. The launcher validates the ZIP layout/platform, rejects unsafe paths and links, stages extraction, checks Python, and reuses a SHA256-addressed package folder. It preserves existing app/model files. `XIANGQI_LAUNCHER_HOME` can override the default `%LOCALAPPDATA%\XiangqiLab` cache/log location for portable storage or testing. The BAT accepts a ZIP path as its first argument, including drag-and-drop. It sets execution policy only for its child PowerShell process; it does not change machine policy.
+
+For browser-free diagnostics, run `powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File tools/windows_launcher.ps1 -LauncherPath <absolute-BAT-path> -CheckOnly -NoPrompt`. Optional `-ArchivePath` chooses a ZIP explicitly and `-CacheRoot` isolates extraction/logs. `-NoBrowser -Port 8870` starts the real server without opening a tab. Windows unit tests cover archive validation and generated entry points; the native double-click launch and real extracted runtime also need a local smoke check. Mac tests skip PowerShell checks, and the Mac launcher still requires manual full extraction.
+
+After building, run `python tools/smoke_windows_launcher.py` on Windows to test the actual BAT, automatic extraction, cache reuse, a ZIP viewer's isolated BAT, and a fully extracted package. It uses a path containing Chinese characters, spaces and shell punctuation, removes Python from the test PATH, starts the real server, checks Pikafish and the team model, and stops only its own process trees. Fixtures/logs stay under `.setup/`. `XIANGQI_NO_BROWSER=1` suppresses browser opening in this check. The launcher clears inherited `PYTHONHOME` and `PYTHONPATH` only in its own process and children to prevent old Python configuration from breaking the bundled runtime or model workers; model dependencies should be installed in the environment specified in the model manifest.
 
 The current builder assumes those inputs are prepared and copies the app tree, including locally added model files. Build from a clean release copy containing only intended models and assets, with both platforms' runtimes prepared. It does not install model dependencies or upload releases. Preserve the runtime/engine notices, extract the outputs into a new location, and verify their launchers on Windows and both Mac architectures before describing a release as tested there.
 
@@ -76,7 +83,9 @@ The current builder assumes those inputs are prepared and copies the app tree, i
 
 | Symptom | Next check |
 | --- | --- |
-| Portable launcher says to extract the complete ZIP | A source checkout has no bundled runtime. Use the README's source commands. |
+| Old launcher says to extract the complete ZIP | Use the new standalone Windows BAT with a complete Windows release ZIP, or the README's source commands. |
+| New Windows launcher cannot find a package | Put the full Windows release ZIP beside the BAT, select it in the file picker, or drag it onto the BAT. GitHub source ZIPs omit Python. |
+| New Windows launcher stops | Read the message before closing and collect the log under `%LOCALAPPDATA%\XiangqiLab\logs`; it prints the actual app/runtime paths. |
 | `py` / `python3` not found | Install Python 3.13, reopen the terminal and check its version. |
 | Mac engine reports permission denied | Apply the `chmod +x` command above. OS download approval is separate from file permissions. |
 | Opening `index.html` directly does not work | Start `app.py` and open the HTTP address printed in the terminal. |

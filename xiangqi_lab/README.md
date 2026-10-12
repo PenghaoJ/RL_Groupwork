@@ -1,10 +1,16 @@
-# Xiangqi Lab — Endgame Workspace v1.1.1
+# Xiangqi Lab — Endgame Workspace v1.2.0
 
 An offline research workspace for setting up Xiangqi endgames, comparing policies and exporting reproducible episodes. The browser communicates with a local Python server; Pikafish runs through UCI. No account or internet connection is required for the bundled features.
 
 ## Start
 
-Extract the complete release ZIP before running it.
+On **Windows**, keep the companion `Start-Xiangqi-Windows.bat` beside the complete Windows release ZIP and double-click the BAT. It checks the files, automatically extracts the package if needed, checks Python and opens the site. You can also extract the ZIP yourself and run `Start-Windows.bat` inside `XiangqiLab/`.
+
+If you double-click the BAT inside a ZIP viewer, Windows may run only that file in a temporary folder. The launcher searches nearby folders, Downloads and Desktop for a named Windows release ZIP. If it cannot find one, select the complete ZIP in the file picker. GitHub's source ZIP does not contain Python and cannot substitute for the Windows offline release.
+
+Automatic extraction and startup logs are saved under `%LOCALAPPDATA%\XiangqiLab\`. The console prints the active app folder; put custom models in `models/` inside that folder. Existing source files and previous package folders are preserved. Failures keep the BAT window open and show a log path. Downloaded scripts may require Windows security approval; no administrator access or system Python installation is required by the offline launcher.
+
+On **macOS**, extract the complete release ZIP before running it. Automatic ZIP recovery is currently Windows-only.
 
 | Package | Launcher | Included runtime |
 | --- | --- | --- |
@@ -89,7 +95,7 @@ Standard moves, horse legs, elephant eyes, cannon screens, palace/river restrict
 
 From the app folder, run `python -m unittest discover -s tests -v` or `python validate_model.py --all`. Use the Python environment that runs the app. In a Windows release use `runtime\python\python.exe` in place of `python`.
 
-A GitHub source checkout does not include Python runtimes. Install Python 3.13 and follow the repository root README to create a development environment and run `app.py` directly. On macOS, make `engine/Pikafish-MacOS-universal` executable with `chmod +x` first. The source workspace's `tools/build_release.py` builds both platform ZIPs and SHA256 checksums only after the required runtimes have been prepared locally.
+A GitHub source checkout does not include Python runtimes. The Windows launcher can use a local environment, installed Python 3.13 or the runtime from a complete Windows ZIP you supply. For manual setup, follow the repository root README to create a development environment and run `app.py` directly. On macOS, make `engine/Pikafish-MacOS-universal` executable with `chmod +x` first. The source workspace's `tools/build_release.py` builds both platform ZIPs and SHA256 checksums only after the required runtimes have been prepared locally.
 
 ## Third-party components
 
