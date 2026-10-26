@@ -55,4 +55,4 @@ Policies load once into a persistent process and may serve multiple browser sess
 
 ## Training semantics to agree on first
 
-The existing environment step advances one ply and returns the acting side's reward. A learner-versus-fixed-opponent wrapper is still planned: it must define learner color, opponent opening moves, terminal checks after either player's move, learner-perspective rewards and truncation. Do not plug the alternating rewards directly into a single-agent trainer. See the [roadmap](ROADMAP.md).
+The base environment advances one ply and returns the acting side's reward. `dqn_training.FixedOpponentEnv` now provides learner moves plus fixed-opponent replies, opponent openings, terminal checks after either move, learner-perspective rewards and time-limit handling. The DQN notebook exports a complete model folder ZIP; its interpreter requires PyTorch. See the [Colab guide](COLAB.md) for training, validation limits and checkpoint handoff. Do not plug the base environment's alternating rewards directly into a single-agent trainer.

@@ -4,6 +4,8 @@ __pycache__/
 *.py[cod]
 .playwright-cli/
 output/
+xiangqi_output/
+.ipynb_checkpoints/
 dist/
 
 # Per-machine Python environments and configuration

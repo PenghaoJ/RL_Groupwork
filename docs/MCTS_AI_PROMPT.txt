@@ -1,0 +1,15 @@
+Please help me continue the MCTS part of our Xiangqi endgame group project from this extracted package.
+
+First read START_HERE.md, docs/EXPERIMENT_STATUS_20261026.md, docs/MCTS_HANDOFF.md, xiangqi_lab/MODEL_API.md, xiangqi_lab/rules.py and xiangqi_lab/training.py. Explain the current work and the next steps to me in Chinese. Keep new code comments and notebook explanations short and in simple English.
+
+The group has a working local website and rules environment, completed DQN/Double DQN experiments, and imported frozen PPO models. The chosen Double DQN and PPO seed 42 are included as opponents. MCTS itself is not implemented, so do not claim to resume an existing MCTS model. Do not overwrite their weights or change the shared rules/rewards to improve my score.
+
+Help me first build a correct pure MCTS baseline and the custom-mcts-teammate website adapter. Explain the distinction between pure search and a trainable policy/value network plus MCTS. If a learned model is needed for the course, propose that training stage separately; check my compute budget and runtime before a long run.
+
+Use the 20 training starts and 6 validation starts in experiments/rook20_20261025/boards.json. The ten starts under output/dqn/UNSEEN10_FOUR_20261025/boards.json are evaluation only: do not use them or their mirrors for learning or tuning. Do not describe this repeatedly evaluated bank as a fresh blind test.
+
+Reuse the Python rules locally or in the cloud; do not depend on the owner's localhost website. Preserve repetition history, side, capture clock and elapsed plies in search states. Check alternating value perspectives, legal-action masking, clone isolation, terminal outcomes and time limits. FEN alone is not the complete history-sensitive search state.
+
+After short correctness checks, give me runnable search/learning commands or a notebook, separate named runs and saved checkpoints where applicable. Freeze learned weights and settings for final evaluation. Report wins/losses/draws/limits, failures, seeds, per-move time and simulations. Compare with the frozen opponents by swapping model assignments on the same starting FEN.
+
+When ready, export a complete model folder with model.json, policy.py, helpers, optional relative checkpoint, search settings, dependencies, README and SHA-256 hashes, so the team website can load it. Pure MCTS may use checkpoint=null. Do not just send an unexplained weight file, and do not fabricate training or test results.

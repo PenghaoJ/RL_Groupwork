@@ -1,25 +1,27 @@
 # Research roadmap and implementation status
 
-Status recorded on 2026-10-12. This separates the existing platform from the group's proposed research work. Method selection and experiments are still in progress; there are no trained-team-model results to report yet. Track task owners and progress in GitHub Issues rather than assigning names in this document.
+Current status, 26 October 2026: DQN/Double DQN training and evaluations have completed, teammate PPO models are integrated, and MCTS is pending. See [the current results](EXPERIMENT_STATUS_20261026.md) and [MCTS handoff](MCTS_HANDOFF.md). The tables below preserve the planning snapshot from 21 October 2026; statements about unstarted training or future PPO integration are historical, not the present status.
 
-## Implemented platform
+## Historical platform snapshot (21 October)
 
 | Area | Available now | Boundary |
 | --- | --- | --- |
 | Local website | Board editor, FEN/presets, matches, game export/import | In-memory local sessions; no hosted training service |
 | Rules and environment | Legal actions, observations, one-ply `XiangqiEnv` | Simplified repetition rules; no Gymnasium spaces/subclass |
+| DQN training | Fixed-opponent wrapper, replay, target network, validation, early stopping, resume and model export | Formal training is off; same-preset validation does not establish unseen-board generalisation |
 | Reference opponents | Random baseline and bundled Pikafish | Presets are not a curated, difficulty-labeled endgame dataset |
 | Model integration | Persistent Python policy, JSON and UCI adapters, preflight | Team template is untrained; arbitrary weights are insufficient |
 | Distribution | Windows and dual-architecture macOS package builder | Windows package tested locally; Mac launcher testing remains to be recorded |
 | Collaboration | Source setup, handoff docs, PR/Issue templates, CI configuration | Actual workflow results are recorded by GitHub after upload |
 
-## Proposed research sequence
+## Original proposed research sequence (21 October)
 
-The team's plan starts with endgames and fixed opponents, then considers learning from expert moves. The items below are planned, not implemented features.
+The next work is to run and compare DQN, PPO and MCTS on an agreed endgame split and evaluation protocol. Expert-data and behavior-cloning work remains optional. The table below records follow-up experiments; the fixed-opponent wrapper itself is implemented.
 
 | Stage | Deliverable | Acceptance evidence |
 | --- | --- | --- |
-| 1. Define experiment contract | Curated endgame split and fixed-opponent wrapper | Tests for both learner colors, terminal states after either move, learner rewards and truncation |
+| 1. Define experiment contract | Curated endgame split and common opponent/evaluation settings | Shared positions, seeds, reward semantics and time limits |
+| DQN experiment | At least 1,000 training episodes, validation early stopping and exported checkpoint | Saved metrics and held-out evaluation; engineering smoke tests alone are insufficient |
 | 2. Establish baselines | Reproducible random, weak and stronger fixed-opponent experiments | Saved configuration, seeds, opponent version/budget and held-out evaluation |
 | 3. MCTS baseline | Search policy using the shared rules and legal actions | Correct value perspective across turns, stated search budget and comparison with random |
 | 4. Expert move dataset | Collect positions and expert moves with labels/metadata | Versioned generator, provenance and train/evaluation separation |
@@ -27,7 +29,7 @@ The team's plan starts with endgames and fixed opponents, then considers learnin
 | 6. Optional PPO | Fine-tune policy/value networks if time and evidence justify it | Compatible learner environment, ablations and equal-budget evaluation |
 | Later extension | Markov-game / jointly learning opponents | Explicit policy-update protocol and a suitable evaluation design |
 
-A fixed-opponent wrapper should combine the learner's action with the opponent's response when play continues. It must also handle cases where either move ends the game, without calling a policy on a terminal position. Keep winner, draw and ply-limit truncation distinct. The underlying board game remains a fully observable, alternating, zero-sum game; fixing the opponent changes how the learner's transitions can be modeled.
+The implemented fixed-opponent wrapper combines the learner's action with the opponent's response when play continues and handles endings after either move. It keeps wins, draws and ply-limit truncations distinct. The underlying board game remains a fully observable, alternating, zero-sum game; fixing the opponent changes how the learner's transitions can be modeled.
 
 ## Suggested work boundaries
 

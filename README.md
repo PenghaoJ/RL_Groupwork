@@ -2,7 +2,7 @@
 
 A local Xiangqi workspace for our endgame learning project. Set up positions, play against Pikafish or a custom policy, and export games for analysis. The interface defaults to English, with optional Chinese menus and traditional Xiangqi piece symbols in both languages.
 
-**Current stage:** the platform and model interfaces are implemented. Training methods and model selection are still being developed. The included random policy and team template are untrained; no trained team checkpoint, MCTS implementation, behavior-cloning trainer or PPO trainer is included.
+**Current stage (26 October 2026):** the platform and model interfaces work; DQN and Double DQN experiments have completed. Three teammate PPO checkpoints were imported and their 600 recorded test games reproduced. The selected old Double DQN and PPO seed 42 also played a 20-game paired match. MCTS is the next teammate's implementation task. Training remains off by default in source notebooks. Weights and detailed results are ignored by Git; a source clone alone does not include them. See [current results](docs/EXPERIMENT_STATUS_20261026.md) and the [MCTS handoff](docs/MCTS_HANDOFF.md).
 
 ## Start here
 
@@ -13,6 +13,7 @@ A local Xiangqi workspace for our endgame learning project. Set up positions, pl
 | Run or change the GitHub source | Quick start below, then [development guide](docs/DEVELOPMENT.md) |
 | Submit a change with your teammates | [Contributing](CONTRIBUTING.md) |
 | Integrate a trained policy | [Model handoff](docs/MODEL_HANDOFF.md) and [API contract](xiangqi_lab/MODEL_API.md) |
+| Use the rules and DQN trainer in Colab | [Colab guide](docs/COLAB.md) and [notebook](notebooks/DQN_ChineseChess.ipynb) |
 | Choose the next research task | [Roadmap and current status](docs/ROADMAP.md) |
 
 ## Source quick start
@@ -61,6 +62,7 @@ RL_Groupwork/
 │   ├── engine/              Bundled Pikafish binaries, NNUE and notices
 │   └── third_party/         Engine source archive and component provenance
 ├── docs/                    Development, model handoff and research roadmap
+├── notebooks/               Colab rules demo and optional DQN training
 ├── .github/                 Automated checks and issue / pull request templates
 ├── tools/build_release.py   Offline package builder (requires local runtimes)
 ├── reports/                 Coursework progress documents
@@ -88,6 +90,6 @@ On macOS, replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`. The suit
 
 The Python backend uses `http.server`; the frontend uses plain HTML/CSS/JavaScript and SVG. It binds to this computer's loopback address and keeps game sessions in memory. Export games before closing or refreshing the page.
 
-`XiangqiEnv` currently advances **one player's ply** per step and returns that acting player's reward. The planned fixed-opponent training wrapper, search and learning experiments are tracked in the [roadmap](docs/ROADMAP.md). The research draw rules are simplified and differ from full competition adjudication; see the [application guide](xiangqi_lab/README.md).
+`XiangqiEnv` advances **one player's ply** per step and returns that acting player's reward. The separate `FixedOpponentEnv` in `dqn_training.py` combines a learner move and opponent reply, with learner-perspective rewards. The optional DQN trainer requires PyTorch; the web application remains standard-library-only. See the [Colab guide](docs/COLAB.md) and [roadmap](docs/ROADMAP.md). Research draw rules differ from full competition adjudication; see the [application guide](xiangqi_lab/README.md).
 
 Pikafish and its network have their own licenses and distribution notices in [engine/](xiangqi_lab/engine/) and [third_party/SOURCES.txt](xiangqi_lab/third_party/SOURCES.txt). Preserve these files when distributing the project. This repository does not currently declare a separate license for the team's original code.
