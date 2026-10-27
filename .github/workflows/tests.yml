@@ -40,3 +40,34 @@ jobs:
         run: python -X utf8 -m unittest discover -s xiangqi_lab/tests -v
       - name: Check the supplied policy template
         run: python -X utf8 xiangqi_lab/validate_model.py --model custom-team-template
+
+  shared-models:
+    name: Shared agents / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            python: "3.13"
+          - os: macos-15
+            python: "3.13"
+          - os: macos-15-intel
+            python: "3.12"
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Prepare CPU model runtime
+        run: python -X utf8 xiangqi_lab/start.py --setup-models
+      - name: Check selected weights and inference on both sides
+        run: >-
+          python -c "import pathlib, subprocess, sys; sys.path.insert(0, 'xiangqi_lab');
+          import start; p=start.prepare(allow_install=False);
+          subprocess.run([str(p), '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'xiangqi_lab/tests', '-p', 'test_shared_models.py', '-v'], check=True)"

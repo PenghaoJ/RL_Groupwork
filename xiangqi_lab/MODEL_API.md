@@ -2,6 +2,10 @@
 
 The website is an inference and evaluation host. It cannot infer a network architecture from arbitrary `.pt`, `.pth` or `.onnx` weights. A complete drop-in model is a folder containing **configuration, inference code and any required weights**, with a working Python environment. The supplied template is runnable but untrained.
 
+The selected Double DQN, PPO and MCTS v4 are already bundled. Use `start.py` or the root launchers for their dependency setup; see [shared models](../docs/SHARED_MODELS.md). Other custom models still need their own compatible dependencies.
+
+Observations also include `initial_fen`, the unchanged starting FEN of the current game. Use this field for preset-specific routing: a persistent worker may serve different games, and Black's first request is usually at ply 1. Existing board/action/history fields keep their original meaning.
+
 ## Recommended: drop-in Python policy
 
 1. Copy `models/team_template` to `models/my_policy`.

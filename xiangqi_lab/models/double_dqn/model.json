@@ -1,0 +1,12 @@
+{
+  "schema": "xiangqi-lab.model.v1",
+  "id": "custom-double-dqn",
+  "name": "Double DQN",
+  "description": "Selected original best, episode 200. Red-trained; Black uses a rotated, color-swapped view.",
+  "protocol": "python",
+  "entrypoint": "policy.py",
+  "python": "{python}",
+  "checkpoint": "best.pt",
+  "device": "cpu",
+  "timeout_seconds": 90
+}

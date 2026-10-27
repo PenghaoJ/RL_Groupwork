@@ -1,0 +1,12 @@
+{
+  "schema": "xiangqi-lab.model.v1",
+  "id": "custom-mcts-v4",
+  "name": "MCTS v4",
+  "description": "Teammate MCTS + UCB + saved experience. Preset-specific memory; custom positions use search only. No training.",
+  "protocol": "python",
+  "entrypoint": "policy.py",
+  "python": "{python}",
+  "checkpoint": null,
+  "device": "cpu",
+  "timeout_seconds": 90
+}

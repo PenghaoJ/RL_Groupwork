@@ -29,6 +29,7 @@ class PerspectiveTests(unittest.TestCase):
                 self.assertEqual(set(transformed["legal_moves"]), set(flipped.legal))
                 self.assertEqual(transformed["repetition_counts"], dict(flipped.repetitions))
                 self.assertEqual(transformed["board_planes"], flipped.observation()["board_planes"])
+                self.assertEqual(transformed["initial_fen"], flipped.initial_fen)
                 self.assertEqual(transformed["ply"], len(flipped.history))
                 self.assertEqual(transformed["halfmove_clock"], flipped.halfmove)
                 normalized, changed = as_red(obs)

@@ -2,14 +2,16 @@
 
 A local Xiangqi workspace for our endgame learning project. Set up positions, play against Pikafish or a custom policy, and export games for analysis. The interface defaults to English, with optional Chinese menus and traditional Xiangqi piece symbols in both languages.
 
-**Current stage (26 October 2026):** the platform and model interfaces work; DQN and Double DQN experiments have completed. Three teammate PPO checkpoints were imported and their 600 recorded test games reproduced. The selected old Double DQN and PPO seed 42 also played a 20-game paired match. MCTS is the next teammate's implementation task. Training remains off by default in source notebooks. Weights and detailed results are ignored by Git; a source clone alone does not include them. See [current results](docs/EXPERIMENT_STATUS_20261026.md) and the [MCTS handoff](docs/MCTS_HANDOFF.md).
+**Current stage (28 October 2026):** the website includes the selected **Double DQN**, **PPO** and **MCTS v4** agents and their payloads. Pull the source, run the launcher, then select either player in the website. The first launch installs missing CPU inference packages in a local environment; it does not train. See [shared models and startup](docs/SHARED_MODELS.md) and [recorded experiment results](docs/EXPERIMENT_STATUS_20261026.md).
 
 ## Start here
 
 | Your task | Guide |
 | --- | --- |
 | Run the complete offline ZIP | [Application guide](xiangqi_lab/README.md) |
-| Start on Windows with one double-click | Keep `Start-Xiangqi-Windows.bat` beside the full Windows release ZIP and open the BAT |
+| Play with the three shared models | [Model versions and first-time setup](docs/SHARED_MODELS.md) |
+| Start on Windows with one double-click | Open `Start-Xiangqi-Windows.bat`; have installed Python or the full Windows release ZIP available |
+| Start on macOS | Open `Start-Xiangqi-macOS.command`; Python 3.12 works for both Mac CPU types |
 | Run or change the GitHub source | Quick start below, then [development guide](docs/DEVELOPMENT.md) |
 | Submit a change with your teammates | [Contributing](CONTRIBUTING.md) |
 | Integrate a trained policy | [Model handoff](docs/MODEL_HANDOFF.md) and [API contract](xiangqi_lab/MODEL_API.md) |
@@ -18,36 +20,32 @@ A local Xiangqi workspace for our endgame learning project. Set up positions, pl
 
 ## Source quick start
 
-Install **Python 3.13** and Git, then clone the repository, or use GitHub Desktop's clone feature:
+Install **Python 3.12** (or 3.13 on Windows / Apple Silicon) and Git, then clone the repository, or use GitHub Desktop's clone feature:
 
 ```text
 git clone https://github.com/PenghaoJ/RL_Groupwork.git
 cd RL_Groupwork
 ```
 
-The web app and its baseline tests use only Python's standard library. No npm build, pip packages or GPU are needed. The repository includes the Windows x64 and macOS universal Pikafish engines and their network file.
+The web app and its baseline tests use only Python's standard library. The two neural players additionally need PyTorch and PPO dependencies, which `start.py` prepares automatically. No npm build or GPU is needed. The repository includes the Windows x64 and macOS universal Pikafish engines and their network file.
 
 On **Windows**, run from the repository root in PowerShell:
 
 ```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -X utf8 xiangqi_lab/app.py
+py -3.12 -X utf8 xiangqi_lab/start.py
 ```
 
-On **macOS**, use a Python 3.13 installation and run from the repository root:
+On **macOS**, use Python 3.12 and run from the repository root:
 
 ```bash
-python3 --version
-python3 -m venv .venv
-chmod +x xiangqi_lab/engine/Pikafish-MacOS-universal
-.venv/bin/python -X utf8 xiangqi_lab/app.py
+python3.12 -X utf8 xiangqi_lab/start.py
 ```
 
 The server opens a browser, usually at `http://127.0.0.1:8765/`. Read the terminal for the actual port. Keep that terminal open; press Ctrl+C to stop. Python source changes require a server restart; refresh the browser after frontend edits.
 
-**A GitHub clone or “Download ZIP” is a source checkout.** It does not contain the ignored Python runtimes or prebuilt release ZIPs. On Windows, double-click `Start-Xiangqi-Windows.bat`: it checks the local app, a bundled runtime, a local `.venv` and installed Python 3.13. If Python is missing, place the complete Windows release ZIP beside it; the launcher unpacks that package and uses its Python with your source code. It can also ask you to select the ZIP. It does not download or install Python. For manual source development, use the commands above. The Mac launcher still requires the extracted macOS offline package; use the source commands on Mac for a Git checkout. GitHub Pages cannot run this Python backend or its local engine.
+**A GitHub clone or “Download ZIP” is a source checkout.** It includes the three selected model payloads but not Python runtimes or prebuilt release ZIPs. On Windows, double-click `Start-Xiangqi-Windows.bat`: it checks a bundled runtime, a local `.venv` and installed Python 3.10–3.13. If Python is missing, place the complete Windows release ZIP beside it; the launcher unpacks that package and uses its Python with your source code. It can also ask you to select the ZIP. It does not install Python system-wide. The Mac launcher accepts installed Python, with Python 3.12 recommended. Both launchers prepare missing model dependencies on first use, which needs internet access. GitHub Pages cannot run this Python backend or its local engine.
 
-For teammates who only want to run the site, share **both** `dist/Start-Xiangqi-Windows.bat` and `dist/XiangqiLab-Windows-v1.2.0.zip`. Keep them together and double-click the BAT; manual extraction is optional. The launcher is self-contained, so it can also run when a ZIP viewer extracts only the BAT to a temporary folder. It searches the launcher's folder, parent, their `dist` folders, Downloads and Desktop (no recursive disk scan); if the package is elsewhere, a file picker asks for it. A launcher alone cannot recreate missing application files or Python.
+The older `dist/XiangqiLab-Windows-v1.2.0.zip` can still supply Python for a current source checkout, but that old ZIP alone does not contain these shared models. Use the latest source launcher and model folders. The Windows launcher searches its folder, parent, their `dist` folders, Downloads and Desktop (no recursive disk scan); if the package is elsewhere, a file picker asks for it. A launcher alone cannot recreate missing application files or Python.
 
 Automatic extraction and timestamped startup logs go to `%LOCALAPPDATA%\XiangqiLab\`. The console prints the actual app folder; add models to that folder's `models/` directory. Repeated launches reuse the package; a different ZIP is kept separately, and incomplete existing copies are preserved. Keep the console open while playing. Windows security or organisation policy may still require approving a downloaded BAT or block PowerShell; the launcher does not change system policy or request administrator access.
 
@@ -57,7 +55,7 @@ Automatic extraction and timestamped startup logs go to `%LOCALAPPDATA%\XiangqiL
 RL_Groupwork/
 ├── xiangqi_lab/              Current web application, rules and model interfaces
 │   ├── static/              HTML, CSS, JavaScript and optional Chinese locale
-│   ├── models/team_template/ Runnable, untrained policy example
+│   ├── models/              Double DQN, PPO, MCTS v4 and an untrained template
 │   ├── tests/               Rules, HTTP and model integration tests
 │   ├── engine/              Bundled Pikafish binaries, NNUE and notices
 │   └── third_party/         Engine source archive and component provenance
@@ -71,7 +69,7 @@ RL_Groupwork/
 
 New web-platform work belongs in `xiangqi_lab/`. The root launchers `Start-Xiangqi-Windows.bat` and `启动残局实验室.bat` open the web app; `启动象棋.bat` opens the older desktop GUI. The web launchers and `xiangqi_lab/Start-Windows.bat` are generated from `tools/windows_launcher.ps1` by `tools/build_launchers.py`.
 
-Local `.venv/`, `.runtime/`, `.setup/`, `dist/`, `output/`, training runs and model checkpoint files are excluded from Git. See [model handoff](docs/MODEL_HANDOFF.md) for sharing weights without putting them in ordinary commits.
+Local environments, `.runtime/`, `.setup/`, `dist/`, `output/`, personal AI-use declarations and other training checkpoints are excluded from Git. The three selected website payloads are explicit exceptions; their hashes are in `xiangqi_lab/models/shared_provenance.json`. See [model handoff](docs/MODEL_HANDOFF.md) for future models.
 
 ## Check your changes
 

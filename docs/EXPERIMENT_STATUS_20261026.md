@@ -60,7 +60,7 @@ Recorded ROOK20 games contain positions where a one-move win was available but t
 
 Research rules use threefold position-and-side repetition and 120 plies without a capture. They do not implement full tournament perpetual-check/chase adjudication. No claim is made that these hand-created starts represent all Xiangqi endgames or are all forced wins.
 
-The earlier MCTS handoff ZIP did not contain an implemented MCTS agent or trainer. A teammate's MCTS v4 has since been archived and tested locally as described above; it has not been installed as a website model or added to that earlier ZIP. The PPO inference loader and frozen weights are included in the earlier handoff; a complete PPO training/resume workspace is not. Its two opponent checkpoints are for inference, not exact training resumption: optimizer, replay buffer and training RNG state are absent.
+The earlier MCTS handoff ZIP did not contain an implemented MCTS agent or trainer. A teammate's MCTS v4 has since been archived and tested locally as described above. Update on 28 October: the selected original Double DQN, PPO seed 42 and MCTS v4 are now bundled as [website players](SHARED_MODELS.md), with a stateless initial-position routing adapter for MCTS. The earlier handoff ZIP is unchanged. Its PPO inference loader and frozen weights are included, but a complete PPO training/resume workspace is not. Those opponent checkpoints are for inference, not exact training resumption: optimizer, replay buffer and training RNG state are absent.
 
 ## Evidence in the handoff ZIP
 

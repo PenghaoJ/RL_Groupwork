@@ -1,0 +1,12 @@
+{
+  "schema": "xiangqi-lab.model.v1",
+  "id": "custom-ppo",
+  "name": "PPO",
+  "description": "Teammate PPO seed 42, best episode 700. Red-trained; Black uses a rotated, color-swapped view.",
+  "protocol": "python",
+  "entrypoint": "policy.py",
+  "python": "{python}",
+  "checkpoint": "weights.zip",
+  "device": "cpu",
+  "timeout_seconds": 90
+}

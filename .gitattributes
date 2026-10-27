@@ -16,6 +16,7 @@
 *.exe binary
 *.nnue binary
 *.zip binary
+*.pt binary
 *.gz binary
 *.7z binary
 *.docx binary

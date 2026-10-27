@@ -10,6 +10,7 @@ dist/
 
 # Per-machine Python environments and configuration
 .venv/
+.venv-models/
 venv/
 .env
 .env.*
@@ -30,6 +31,11 @@ wandb/
 *.safetensors
 *.log
 xiangqi_lab/models/local_*/
+
+# Only the selected website checkpoint is shared with the team.
+!xiangqi_lab/models/double_dqn/best.pt
+# Personal declarations stay local, outside the shared project deliverables.
+reports/AI_Usage_Declaration*.docx
 
 # Editor and operating-system files
 .idea/

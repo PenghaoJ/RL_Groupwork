@@ -37,6 +37,7 @@ def flip_observation(observation):
     return {
         **observation,
         "fen": flip_fen(observation["fen"]),
+        **({"initial_fen": flip_fen(observation["initial_fen"])} if "initial_fen" in observation else {}),
         "side_to_move": "red" if observation["side_to_move"] == "black" else "black",
         "board_planes": [[list(reversed(row)) for row in reversed(planes[(i + 7) % 14])] for i in range(14)],
         "legal_moves": [flip_move(move) for move in observation["legal_moves"]],

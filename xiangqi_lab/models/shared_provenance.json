@@ -1,0 +1,13 @@
+{
+  "published": "2026-10-28",
+  "purpose": "Website inference only; original selected payloads, no retraining",
+  "double_dqn": {"selection": "Original Double DQN best, episode 200", "trained_side": "red"},
+  "ppo": {"selection": "Teammate rook20 seed42 best, episode 700", "trained_side": "red"},
+  "mcts": {"selection": "Received v4 scene-specific experience", "search_iterations": 96, "rollout_depth": 10, "adapter": "Route by observation.initial_fen on every request; search code unchanged"},
+  "sha256": {
+    "double_dqn/best.pt": "b616b5c8fdb10587a8b9054484348ee0db118b02cf2b4e6e5e54cba9d90d7379",
+    "ppo/weights.zip": "0f06447b8c97fd433b425a65f2427f055ccda65ab79fe173fd7f3e2a98ee3876",
+    "mcts_v4/experience.json": "12bd8c7962aba5a265280da82e312877289e7a1f4b045532d5eb2bc869a223a6",
+    "mcts_v4/received_policy.py": "b1bb180e00c6fbca45b30fc415622e6c4be749b052951aaf643e1bcdbf03f791"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "version": "xiangqi-ppo-history-v1",
+  "history_capacity": 162,
+  "trained_side": "red"
+}

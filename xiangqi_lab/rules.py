@@ -213,7 +213,7 @@ class Game:
 
     def observation(self):
         planes=[[[int(p == kind) for p in row] for row in self.board] for kind in PIECES]
-        return {"fen":self.fen,"board_planes":planes,"plane_order":PIECES,"side_to_move":self.side,"legal_moves":list(self.legal),"legal_action_ids":[action_id(m) for m in self.legal],"halfmove_clock":self.halfmove,"ply":len(self.history),"max_plies":self.max_plies,"repetition_counts":dict(self.repetitions)}
+        return {"fen":self.fen,"initial_fen":self.initial_fen,"board_planes":planes,"plane_order":PIECES,"side_to_move":self.side,"legal_moves":list(self.legal),"legal_action_ids":[action_id(m) for m in self.legal],"halfmove_clock":self.halfmove,"ply":len(self.history),"max_plies":self.max_plies,"repetition_counts":dict(self.repetitions)}
 
     def snapshot(self):
         return {"fen":self.fen,"initial_fen":self.initial_fen,"board":copy.deepcopy(self.board),"side":self.side,"legal_moves":list(self.legal),"in_check":in_check(self.board,self.side),"history":copy.deepcopy(self.history),"outcome":self.outcome(),"halfmove_clock":self.halfmove,"max_plies":self.max_plies,"piece_count":sum(bool(p) for row in self.board for p in row)}

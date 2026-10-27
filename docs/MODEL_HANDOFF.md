@@ -31,7 +31,7 @@ For a separate interpreter, a manifest can use its executable path. Keep machine
 
 ## Share a checkpoint reproducibly
 
-Share large weights as a separate team artifact or a GitHub Release attachment. Record a durable download location, exact filename, SHA-256 hash and the code commit needed to load it. A normal source clone does not fetch ignored weights.
+The three selected website agents are now bundled as a deliberate exception: see [shared models](SHARED_MODELS.md). Their small payloads are tracked, so a normal pull fetches them. For additional large checkpoints, share a separate team artifact or GitHub Release attachment and record its location, filename, SHA-256 and loading code commit. A normal clone does not fetch other ignored weights.
 
 In the model README, record:
 

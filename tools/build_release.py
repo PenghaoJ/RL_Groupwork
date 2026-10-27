@@ -22,7 +22,7 @@ def add_bytes(z,name,data,mode=0o644,kind=stat.S_IFREG):
 
 def add_app(z,platform):
     for file in sorted(APP.rglob('*')):
-        if not file.is_file() or '__pycache__' in file.parts or 'runtime' in file.parts:continue
+        if not file.is_file() or any(p in ('__pycache__','runtime','.venv-models','.venv') or p.startswith('local_') for p in file.relative_to(APP).parts):continue
         relative=file.relative_to(APP).as_posix()
         if platform=='Windows' and (file.name=='Pikafish-MacOS-universal' or file.suffix=='.command'):continue
         if platform=='macOS' and (file.suffix=='.exe' or file.suffix=='.bat'):continue

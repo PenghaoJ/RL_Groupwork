@@ -33,7 +33,7 @@ function Test-Python([string]$Python) {
     if ($Python -match '\\WindowsApps\\') { return $false }
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo.FileName = $Python
-    $process.StartInfo.Arguments = '-I -c "import sys, encodings, json, http.server, ssl, ctypes; assert sys.version_info[:2] == (3, 13); print(''XIANGQI_PYTHON_OK'')"'
+    $process.StartInfo.Arguments = '-I -c "import sys, encodings, json, http.server, ssl, ctypes; assert (3, 10) <= sys.version_info[:2] <= (3, 13); print(''XIANGQI_PYTHON_OK'')"'
     $process.StartInfo.UseShellExecute = $false
     $process.StartInfo.CreateNoWindow = $true
     $process.StartInfo.RedirectStandardOutput = $true
@@ -68,7 +68,7 @@ function Find-Python([string]$AppFolder, [switch]$LocalOnly) {
     }
     $candidates = @()
     if (-not $LocalOnly) {
-        foreach ($key in @('HKCU:\Software\Python\PythonCore\3.13\InstallPath', 'HKLM:\Software\Python\PythonCore\3.13\InstallPath')) {
+        foreach ($key in @('HKCU:\Software\Python\PythonCore\3.13\InstallPath', 'HKLM:\Software\Python\PythonCore\3.13\InstallPath', 'HKCU:\Software\Python\PythonCore\3.12\InstallPath', 'HKLM:\Software\Python\PythonCore\3.12\InstallPath', 'HKCU:\Software\Python\PythonCore\3.11\InstallPath', 'HKLM:\Software\Python\PythonCore\3.11\InstallPath', 'HKCU:\Software\Python\PythonCore\3.10\InstallPath', 'HKLM:\Software\Python\PythonCore\3.10\InstallPath')) {
             try {
                 if (Test-Path -LiteralPath $key) {
                     $install = (Get-Item -LiteralPath $key).GetValue('')
@@ -258,7 +258,9 @@ function Start-Xiangqi {
     $env:PYTHONHOME = $null
     $env:PYTHONPATH = $null
     $env:PYTHONUTF8 = '1'
-    $arguments = @('-E', '-s', '-X', 'utf8', (Join-Path $app 'app.py'), '--port', "$Port")
+    $entryPoint = Join-Path $app 'start.py'
+    if (-not (Test-Path -LiteralPath $entryPoint -PathType Leaf)) { $entryPoint = Join-Path $app 'app.py' }
+    $arguments = @('-E', '-s', '-X', 'utf8', $entryPoint, '--port', "$Port")
     if ($NoBrowser) { $arguments += '--no-browser' }
     Push-Location -LiteralPath $app
     try {
