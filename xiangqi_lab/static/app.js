@@ -1,4 +1,6 @@
 'use strict';
+// Keep developer examples available to the API and CLI, but out of player menus.
+const HIDDEN_MODEL_IDS=new Set(['custom-example','custom-team-template']);
 // Display names are independent of model IDs and saved game data.
 const EN={
   'Starting position':'Full board',
@@ -59,8 +61,10 @@ async function loadLanguage(value){
   populateModels();populatePresets();renderModelList();
   if(state){const fen=$('fen-input').value;render();$('fen-input').value=fen;if(editing)renderPalette();}
 }
+function visibleModels(){return meta.models.filter(m=>!HIDDEN_MODEL_IDS.has(m.id));}
 function populateModels(){
-  for(const side of ['red','black']){const select=$(side+'-model'),previous=select.value;select.replaceChildren();for(const model of meta.models){const o=document.createElement('option');o.value=model.id;o.textContent=modelName(model.id);select.appendChild(o);}select.value=meta.models.some(m=>m.id===previous)?previous:(side==='red'?'human':meta.engine_available?'pikafish':'random');}
+  const choices=visibleModels();
+  for(const side of ['red','black']){const select=$(side+'-model'),previous=select.value;select.replaceChildren();for(const model of choices){const o=document.createElement('option');o.value=model.id;o.textContent=modelName(model.id);select.appendChild(o);}select.value=choices.some(m=>m.id===previous)?previous:(side==='red'?'human':meta.engine_available?'pikafish':'random');}
 }
 function populatePresets(){
   $('presets').replaceChildren();
@@ -68,7 +72,7 @@ function populatePresets(){
 }
 function renderModelList(){
   $('model-list').replaceChildren();
-  for(const model of meta.models.filter(m=>m.id!=='human')){
+  for(const model of visibleModels().filter(m=>m.id!=='human')){
     const row=document.createElement('div');row.className='model-row';
     const text=document.createElement('div'),name=document.createElement('strong'),description=document.createElement('small');name.textContent=modelName(model.id);description.textContent=t(model.description);text.append(name,description);
     const button=document.createElement('button');button.className='button secondary check-model';button.textContent=t('Test');button.setAttribute('aria-label',t('Test {model}',{model:modelName(model.id)}));button.disabled=busy;button.onclick=()=>validateModel(model.id);row.append(text,button);$('model-list').appendChild(row);

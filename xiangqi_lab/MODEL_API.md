@@ -4,6 +4,8 @@ The website is an inference and evaluation host. It cannot infer a network archi
 
 The selected Double DQN, PPO and MCTS v4 are already bundled. Use `start.py` or the root launchers for their dependency setup; see [shared models](../docs/SHARED_MODELS.md). Other custom models still need their own compatible dependencies.
 
+The untrained JSON example (`custom-example`) and team template (`custom-team-template`) are hidden from the website's player menus and Models list. Their code, manifests and CLI validation remain available. When copying a template, assign a new unique ID as described below so your model appears in the website.
+
 Observations also include `initial_fen`, the unchanged starting FEN of the current game. Use this field for preset-specific routing: a persistent worker may serve different games, and Black's first request is usually at ply 1. Existing board/action/history fields keep their original meaning.
 
 ## Recommended: drop-in Python policy
