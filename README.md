@@ -67,7 +67,7 @@ RL_Groupwork/
 └── ChineseChessBoard_Package/ Original desktop GUI, retained for reference
 ```
 
-New web-platform work belongs in `xiangqi_lab/`. The root launchers `Start-Xiangqi-Windows.bat` and `启动残局实验室.bat` open the web app; `启动象棋.bat` opens the older desktop GUI. The web launchers and `xiangqi_lab/Start-Windows.bat` are generated from `tools/windows_launcher.ps1` by `tools/build_launchers.py`.
+New web-platform work belongs in `xiangqi_lab/`. The root launchers `Start-Xiangqi-Windows.bat` and `Start-Xiangqi-Lab.bat` open the web app; `Start-Classic-Xiangqi.bat` opens the older desktop GUI through `ChineseChessBoard_Package/ChineseChessBoard_Package/Start-Chessboard.bat`. The web launchers and `xiangqi_lab/Start-Windows.bat` are generated from `tools/windows_launcher.ps1` by `tools/build_launchers.py`. Launcher filenames and application startup prompts are in English.
 
 Local environments, `.runtime/`, `.setup/`, `dist/`, `output/`, personal AI-use declarations and other training checkpoints are excluded from Git. The three selected website payloads are explicit exceptions; their hashes are in `xiangqi_lab/models/shared_provenance.json`. See [model handoff](docs/MODEL_HANDOFF.md) for future models.
 

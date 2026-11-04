@@ -7,7 +7,8 @@ set "XIANGQI_EXIT=%ERRORLEVEL%"
 if "%XIANGQI_EXIT%"=="0" exit /b 0
 echo.
 echo Launch stopped. Read the message above before closing this window.
-pause
+echo Press any key to close this window.
+pause >nul
 exit /b %XIANGQI_EXIT%
 #==XIANGQI_POWERSHELL==
 # Source for the self-contained Windows launchers. Run build_launchers.py after editing.

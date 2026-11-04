@@ -2,7 +2,7 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TARGETS = ('Start-Xiangqi-Windows.bat', '启动残局实验室.bat', 'xiangqi_lab/Start-Windows.bat')
+TARGETS = ('Start-Xiangqi-Windows.bat', 'Start-Xiangqi-Lab.bat', 'xiangqi_lab/Start-Windows.bat')
 HEADER = r'''@echo off
 setlocal DisableDelayedExpansion
 set "XIANGQI_LAUNCHER_PATH=%~f0"
@@ -12,7 +12,8 @@ set "XIANGQI_EXIT=%ERRORLEVEL%"
 if "%XIANGQI_EXIT%"=="0" exit /b 0
 echo.
 echo Launch stopped. Read the message above before closing this window.
-pause
+echo Press any key to close this window.
+pause >nul
 exit /b %XIANGQI_EXIT%
 #==XIANGQI_POWERSHELL==
 '''
